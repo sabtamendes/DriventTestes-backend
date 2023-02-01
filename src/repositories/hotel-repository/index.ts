@@ -1,12 +1,22 @@
 import { prisma } from "@/config";
-import { Enrollment } from "@prisma/client";
+import { Booking, Hotel, Room } from "@prisma/client";
+import { array } from "joi";
 
-async function findAllHotel():Promise<Enrollment[]> {
-  return await prisma.enrollment.findMany();
-  //return await prisma.hotel.findMany();
+async function findReservation(userId: number): Promise<Booking[]> {
+  return await prisma.booking.findMany({ where: { userId } });
+}
+
+async function findHotels() {
+  return await prisma.hotel.findMany();
+}
+
+async function findHotelById(hotelId: number) {
+  return await prisma.hotel.findFirst({ where: { id: hotelId }, include: { "Rooms": true } });
 }
 
 const hotelRepository = {
-  findAllHotel
-}
-export default hotelRepository
+  findReservation,
+  findHotels,
+  findHotelById
+};
+export default hotelRepository;

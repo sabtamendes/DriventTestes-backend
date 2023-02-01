@@ -1,27 +1,36 @@
-import { notFoundError, unauthorizedError } from "@/errors";
+import { notFoundError, requestError, unauthorizedError } from "@/errors";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
-import { Ticket, TicketStatus } from "@prisma/client";
-import ticketService from "../tickets-service";
 
 async function getHotels(userId: number) {
+  if (!userId) throw unauthorizedError();
 
-  //buscar hotel se ticket estiver pago
-  //buscar hotel se estiver com hospedagem
-  //provavelmente não é rota autenticada
-  // se for rota autenticada if(!userId) throw unauthorizedError();
+  const ticketHasAlreadyBeenPaid = await ticketRepository.findAllTicketsHasBeenPaid(userId);
 
- const ticketHasAlreadyBeenPaid = await ticketRepository.findAllTicketsHasBeenPaid();
+  if (ticketHasAlreadyBeenPaid.length === 0) throw notFoundError();
 
- if(ticketHasAlreadyBeenPaid.length === 0) throw notFoundError();
+  const reservation = await hotelRepository.findReservation(userId);
 
- const hotel = await hotelRepository.findAllHotel();
+  if (reservation.length === 0) throw notFoundError();
 
- return hotel;
+  const hotel = await hotelRepository.findHotels();
+
+  return hotel;
+}
+
+async function getHotelsById(hotelId:number) {
+  if(!hotelId) throw requestError(400, "");
+
+  const hotel = await hotelRepository.findHotelById(hotelId);
+
+  if(!hotel) throw notFoundError();
+
+  return hotel;
 }
 
 const hotelsService = {
-  getHotels
-}
+  getHotels,
+  getHotelsById
+};
 
 export default hotelsService;
