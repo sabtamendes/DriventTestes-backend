@@ -56,8 +56,8 @@ async function ticketProcessPayment(ticketId: number) {
   });
 }
 
-async function findAllTicketsHasBeenPaid():Promise<Ticket[]>{
-  return await prisma.ticket.findMany({where: {status:"PAID"}});
+async function findAllTicketsHasBeenPaid(userId:number): Promise<Ticket[]> {
+  return await prisma.ticket.findMany({where:{enrollmentId: userId, status: "PAID"}});
 }
 
 export type CreateTicketParams = Omit<Ticket, "id" | "createdAt" | "updatedAt">

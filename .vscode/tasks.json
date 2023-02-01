@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dev",
+			"problemMatcher": [],
+			"label": "npm: dev",
+			"detail": "cross-env NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts"
+		},
+		{
+			"type": "npm",
+			"script": "dev:migration:run",
+			"problemMatcher": [],
+			"label": "npm: dev:migration:run",
+			"detail": "npm run dev:load-envs prisma migrate deploy"
+		}
+	]
+}
