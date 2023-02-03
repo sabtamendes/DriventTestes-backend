@@ -1,6 +1,6 @@
 import { prisma } from "@/config";
 import { createUser } from "./users-factory";
-import { Hotel, TicketType } from "@prisma/client";
+import { Hotel } from "@prisma/client";
 import faker from "@faker-js/faker";
 
 export async function createReservation(userId: number, roomId: number) {
@@ -32,10 +32,30 @@ export async function createRoom(id: number, user: string) {
 
   });
 }
-export async function findHotels(): Promise<Hotel[]> {
+export async function findHotels() {
   return await prisma.hotel.findMany();
 }
 
-async function findTicketTypeIsnRemote(isRemote: boolean): Promise<TicketType[]> {
-  return await prisma.ticketType.findMany({ where: { isRemote } });
+export async function findHotelById(hotelId: number) {
+  return await prisma.hotel.findFirst({ where: { id: hotelId }, include: { "Rooms": true } });
+}
+
+export async function findWithAddressByUserId(userId: number) {
+  return prisma.enrollment.findFirst({
+    where: { userId },
+    include: {
+      Address: true,
+    },
+  });
+}
+
+export async function findTicketByEnrollmentId(enrollmentId: number) {
+  return prisma.ticket.findFirst({
+    where: {
+      enrollmentId,
+    },
+    include: {
+      TicketType: true, //inner join
+    }
+  });
 }
