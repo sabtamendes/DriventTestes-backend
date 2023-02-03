@@ -34,7 +34,6 @@ async function getAddressFromCEP(cep: string): Promise<AddressEnrollment> {
 
 async function getOneWithAddressByUserId(userId: number): Promise<GetOneWithAddressByUserIdResult> {
   const enrollmentWithAddress = await enrollmentRepository.findWithAddressByUserId(userId);
-
   if (!enrollmentWithAddress) throw notFoundError();
 
   const [firstAddress] = enrollmentWithAddress.Address;

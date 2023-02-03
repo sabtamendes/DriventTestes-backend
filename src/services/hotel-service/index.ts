@@ -1,43 +1,58 @@
 import { notFoundError, requestError, unauthorizedError } from "@/errors";
 import { paymentRequired } from "@/errors/auth-error";
+import enrollmentRepository from "@/repositories/enrollment-repository";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 
 async function getHotels(userId: number) {
   if (!userId) throw unauthorizedError();
 
-  const ticketHasAlreadyBeenPaid = await ticketRepository.findAllTicketsHasBeenPaid(userId);
+  //se não tiver inscrição
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if(!enrollment) throw notFoundError();
 
-  const reservedTicket = ticketHasAlreadyBeenPaid.find((ticket) => ticket.status === "RESERVED");
-  if (reservedTicket) throw paymentRequired();
+  //se não tiver ticket
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if(!ticket) throw notFoundError();
+  
+  //se não tiver efetuado o pagamento do ticket
+  if(ticket.status === "RESERVED") throw paymentRequired();
 
-  const ticket = ticketHasAlreadyBeenPaid;
-  if (!ticket) throw notFoundError();
+  //se ticket é remoto e se não existe hospedagem
+  const ticketType = await ticketRepository.findTicketType(ticket.id);
+  if(ticketType.isRemote === true || ticketType.includesHotel === false) throw paymentRequired();
 
-  const enrollment = ticket[0].enrollmentId;
-  if (!enrollment) throw notFoundError();
-
-  const isRemote = true;
-  const ticketTypeIsRemote = await ticketRepository.findTicketTypeIsnRemote(isRemote);
-
-  const isRemoteAndNotIncludesHotel = ticketTypeIsRemote.filter((ticketType) => ticketType.isRemote === true || ticketType.includesHotel === false);
-  if (isRemoteAndNotIncludesHotel.length > 0) throw paymentRequired();
-
-  const reservation = await hotelRepository.findReservation(userId);
-  if (reservation.length === 0) throw paymentRequired();
-
+  //se não existe hotel
   const hotel = await hotelRepository.findHotels();
-  if (hotel.length === 0) throw notFoundError();
+  if(!hotel) throw notFoundError();
+
   return hotel;
 }
 
-async function getHotelsById(hotelId: number) {
+async function getHotelsById(userId: number, hotelId: number) {
   if (!hotelId) throw requestError(400, "");
 
+  if (!userId) throw unauthorizedError();
+
+  //se não tiver inscrição
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if(!enrollment) throw notFoundError();
+
+  //se não tiver ticket
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if(!ticket) throw notFoundError();
+  
+  //se não tiver efetuado o pagamento do ticket
+  if(ticket.status === "RESERVED") throw paymentRequired();
+
+  //se ticket é remoto e se não existe hospedagem
+  const ticketType = await ticketRepository.findTicketType(ticket.id);
+  if(ticketType.isRemote === true || ticketType.includesHotel === false) throw paymentRequired();
+
+  //busca pelo hotel por id
   const hotel = await hotelRepository.findHotelById(hotelId);
-
   if (!hotel) throw notFoundError();
-
+  
   return hotel;
 }
 
