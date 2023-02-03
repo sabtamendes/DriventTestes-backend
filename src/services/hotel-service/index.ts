@@ -23,7 +23,6 @@ async function getHotels(userId: number) {
   const isRemoteAndNotIncludesHotel = ticketTypeIsRemote.filter((ticketType) => ticketType.isRemote === true || ticketType.includesHotel === false);
   if (isRemoteAndNotIncludesHotel.length > 0) throw paymentRequired();
 
-
   const reservation = await hotelRepository.findReservation(userId);
   if (reservation.length === 0) throw paymentRequired();
 

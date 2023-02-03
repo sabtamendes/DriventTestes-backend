@@ -57,7 +57,7 @@ async function ticketProcessPayment(ticketId: number) {
 }
 
 async function findAllTicketsHasBeenPaid(userId: number): Promise<Ticket[]> {
-  return await prisma.ticket.findMany({ where: { enrollmentId: userId, status: "PAID" } });
+  return await prisma.ticket.findMany({ where: { enrollmentId: userId } });
 }
 
 async function findTicketTypeIsnRemote(isRemote: boolean): Promise<TicketType[]> {
