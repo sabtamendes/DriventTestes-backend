@@ -23,6 +23,7 @@ export async function createTicket(enrollmentId: number, ticketTypeId: number, s
   });
 }
 
+
 export async function findAllTicketsHasBeenPaid(userId: number): Promise<Ticket[]> {
   return await prisma.ticket.findMany({ where: { enrollmentId: userId, status: "PAID" } });
 }
