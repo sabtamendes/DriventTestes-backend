@@ -1,6 +1,6 @@
 import faker from "@faker-js/faker";
 import { prisma } from "@/config";
-import { TicketStatus } from "@prisma/client";
+import { Ticket, TicketStatus } from "@prisma/client";
 
 export async function createTicketType() {
   return prisma.ticketType.create({
@@ -21,4 +21,8 @@ export async function createTicket(enrollmentId: number, ticketTypeId: number, s
       status,
     },
   });
+}
+
+export async function findAllTicketsHasBeenPaid(userId: number): Promise<Ticket[]> {
+  return await prisma.ticket.findMany({ where: { enrollmentId: userId, status: "PAID" } });
 }
