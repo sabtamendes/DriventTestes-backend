@@ -1,6 +1,5 @@
 import { prisma } from "@/config";
-import { Booking, Hotel, Room } from "@prisma/client";
-import { array } from "joi";
+import { Booking } from "@prisma/client";
 
 async function findReservation(userId: number): Promise<Booking[]> {
   return await prisma.booking.findMany({ where: { userId } });
