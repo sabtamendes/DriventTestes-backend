@@ -136,8 +136,8 @@ describe("GET /hotels", () => {
 });
 
 describe("GET /hotels/:hotelId", () => {
-   //quando o token não é enviado
-   it("should respond with status 401 if no token is given", async () => {
+  //quando o token não é enviado
+  it("should respond with status 401 if no token is given", async () => {
     const response = await server
       .get("/hotels");
     expect(response.status)
@@ -170,14 +170,14 @@ describe("GET /hotels/:hotelId", () => {
     it("should respond with status 400 if query param hotelId is missing", async () => {
       const token = await generateValidToken();
       const response = await server
-      .get("/hotels/:ticketId")
-      .set("Authorization", `Bearer ${token}`);
+        .get("/hotels/:ticketId")
+        .set("Authorization", `Bearer ${token}`);
       expect(response.status)
-      .toEqual(httpStatus.BAD_REQUEST);
+        .toEqual(httpStatus.BAD_REQUEST);
     });
 
-     //quando o usuário não tem cadastro
-     it("should respond with status 404 when there is no enrollment for given user", async () => {
+    //quando o usuário não tem cadastro
+    it("should respond with status 404 when there is no enrollment for given user", async () => {
       const token = await generateValidToken();
       const response = await server
         .get("/hotels")
@@ -224,7 +224,6 @@ describe("GET /hotels/:hotelId", () => {
         .set("Authorization", `Bearer ${token}`);
       expect(result.status).toBe(httpStatus.NOT_FOUND);
     });
-
     
     //caso de sucesso
     it("should respond with status 200 when searching for a specific hotel by its id", async () => {
@@ -238,11 +237,26 @@ describe("GET /hotels/:hotelId", () => {
           .get(`/hotels/${hotelId}`)
           .set("Authorization", `Bearer ${token}`);
         const hotel = await findHotelById(hotelId);
-        expect(result.body).toEqual(hotel);
+        expect(result.body).toEqual(expect.objectContaining({
+          id: hotel.id,
+          name: hotel.name,
+          image: hotel.image,
+          createdAt: hotel.createdAt.toISOString(),
+          updatedAt: hotel.updatedAt.toISOString(),
+          Rooms: [
+            {
+              id: hotel.Rooms[0].id,
+              name: hotel.Rooms[0].name,
+              capacity: hotel.Rooms[0].capacity,
+              hotelId: hotel.Rooms[0].hotelId,
+              createdAt: hotel.Rooms[0].createdAt.toISOString(),
+              updatedAt: hotel.Rooms[0].updatedAt.toISOString(),
+            }
+          ]
+        }));
         expect(result.status).toBe(httpStatus.OK);
       } 
     });
-    
   });
 });
 
