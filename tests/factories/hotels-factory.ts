@@ -1,6 +1,5 @@
 import { prisma } from "@/config";
 import { createUser } from "./users-factory";
-import { Hotel } from "@prisma/client";
 import faker from "@faker-js/faker";
 
 export async function createReservation(userId: number, roomId: number) {

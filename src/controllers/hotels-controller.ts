@@ -8,7 +8,6 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
 
   try {
     const hotel = await hotelsService.getHotels(userId);
-
     return res.status(httpStatus.OK).send(hotel);
   } catch (error) {
     return handleError(error, res);
