@@ -88,36 +88,33 @@ describe("GET /hotels", () => {
     });
 
     //se ticket ainda não foi pago ou não inclui hotel ou o tipo do ticket é remoto
-    it("should respond with status 402 when ticket has not paid yet, ticketType is remote and does not includes a hotel reservation", async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-      if (ticket.status === "RESERVED" || ticketType.isRemote === true || ticketType.includesHotel === false) {
+      it("should respond with status 402 when ticket has not paid yet, ticketType is remote and does not include a hotel reservation", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollment = await createEnrollmentWithAddress(user);
+        const ticketType = await createTicketType();
+        await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
         const response = await server
           .get("/hotels")
           .set("Authorization", `Bearer ${token}`);
+    
         expect(response.status)
           .toEqual(httpStatus.PAYMENT_REQUIRED);
-      }
-    }); 
-  
+      });
+     
     //se não existe hotel
-    it("should respond with status 404 when doesnt have a hotel", async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const response = await server
-        .get("/hotels")
-        .set("Authorization", `Bearer ${token}`);
-      const hotels = await findHotels();
-      if(hotels.length === 0) {
-        expect(response.status)
-          .toEqual(httpStatus.NOT_FOUND);
-      }
-    });
+      it("should respond with status 404 when doesn't have a hotel", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const response = await server
+          .get("/hotels")
+          .set("Authorization", `Bearer ${token}`);
+          const hotels = await findHotels();
+          expect(hotels.length).toEqual(0);
+        expect(response.status).toEqual(httpStatus.NOT_FOUND);
+      }); 
 
-    // caso sucesso da rsponse
+    // caso sucesso da response
     it("should respond with status 200 when the hotels exists in the database", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -131,7 +128,7 @@ describe("GET /hotels", () => {
         expect(result.body)
           .toEqual(hotels);
       }
-    });
+    });   
   });
 });
 
