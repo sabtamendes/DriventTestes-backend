@@ -109,8 +109,6 @@ describe("GET /hotels", () => {
         const response = await server
           .get("/hotels")
           .set("Authorization", `Bearer ${token}`);
-          const hotels = await findHotels();
-          expect(hotels.length).toEqual(0);
         expect(response.status).toEqual(httpStatus.NOT_FOUND);
       }); 
 
@@ -122,12 +120,12 @@ describe("GET /hotels", () => {
         .get("/hotels")
         .set("Authorization", `Bearer ${token}`);
       const hotels = await findHotels();
-      if(hotels.length > 0) {
+//dados de uma validação já existente podem entrar nesse teste
         expect(result.status)
           .toBe(httpStatus.OK);
         expect(result.body)
           .toEqual(hotels);
-      }
+
     });   
   });
 });
