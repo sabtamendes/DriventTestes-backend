@@ -26,3 +26,25 @@ export async function createTicket(enrollmentId: number, ticketTypeId: number, s
 export async function findAllTicketsHasBeenPaid(userId: number): Promise<Ticket[]> {
   return await prisma.ticket.findMany({ where: { enrollmentId: userId, status: "PAID" } });
 }
+
+export async function createTicketTypeWithHotel() {
+  return prisma.ticketType.create({
+    data: {
+      name: faker.name.findName(),
+      price: faker.datatype.number(),
+      isRemote: false,
+      includesHotel: true,
+    },
+  });
+}
+
+export async function createTicketTypeRemote() {
+  return prisma.ticketType.create({
+    data: {
+      name: faker.name.findName(),
+      price: faker.datatype.number(),
+      isRemote: true,
+      includesHotel: faker.datatype.boolean(),
+    },
+  });
+}
